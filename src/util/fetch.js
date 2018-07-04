@@ -7,7 +7,7 @@ const init = {
         // 'Content-Type': 'application/json'
     }
 };
-const API_HOST = '//localhost:4000';
+const API_HOST = '/api';
 export default function fetchData(url, config){
     return fetch(API_HOST + url, {
         ...init,
