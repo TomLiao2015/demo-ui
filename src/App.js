@@ -12,7 +12,10 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 import {withStyles} from '@material-ui/core/styles';
 
 const styles = (theme) => ({});
@@ -37,6 +40,9 @@ class App extends Component {
             mode: 'default'
         }
     }
+
+    static CUSTOMER_API_URL = '/demo/customers';
+    static TRANSACTION_API_URL = '/demo/transactions';
     static MODE = {
         CREATE_CUSTOMER: 'createCustomer',
         UPDATE_CUSTOMER: 'updateCustomer',
@@ -45,6 +51,7 @@ class App extends Component {
         UPDATE_TRANSACTION: 'updateTransaction',
         DELETE_TRANSACTION: 'deleteTransaction'
     }
+
     async componentWillMount() {
         Promise.all([
             fetch('/demo/customers', {method: 'get'}),
@@ -57,14 +64,16 @@ class App extends Component {
         });
 
     }
-    closeDialog (e) {
+
+    closeDialog(e) {
         this.setState({
             dialogTitle: '',
             formData: {},
             mode: 'default'
         })
     }
-    openDialog (data, type) {
+
+    openDialog(data, type) {
         let dialogTile = '';
         switch (type) {
             case App.MODE.CREATE_CUSTOMER:
@@ -87,16 +96,27 @@ class App extends Component {
                 break
         }
         this.setState({
-            dialogTitle: '',
+            dialogTitle: dialogTile,
             formData: data,
             mode: type
         })
     }
+
     changeTab(event, value) {
         this.setState({
             tabIndex: value
         })
     }
+
+    inputChange = (name) => (event) => {
+        this.setState({
+            formData: {
+                ...this.state.formData,
+                [name]: event.target.value,
+            }
+        });
+    };
+
     generateCustomerInfoDialog() {
         return (<Dialog
             open={this.state.mode === App.MODE.CREATE_CUSTOMER || this.state.mode === App.MODE.UPDATE_CUSTOMER}
@@ -108,10 +128,68 @@ class App extends Component {
                 <TextField
                     autoFocus
                     margin="dense"
-                    id="name"
-                    label="Email Address"
-                    type="email"
+                    id="firstName"
+                    label="First Name"
                     fullWidth
+                    value={this.state.formData.firstName}
+                    onChange={this.inputChange('firstName')}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="lastName"
+                    label="Last Name"
+                    fullWidth
+                    value={this.state.formData.lastName}
+                    onChange={this.inputChange('lastName')}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="birthday"
+                    label="Birthday"
+                    fullWidth
+                    type="date"
+                    defaultValue="2018-07-06"
+                    value={this.state.formData.birthday}
+                    onChange={this.inputChange('birthday')}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="country"
+                    label="Country"
+                    fullWidth
+                    value={this.state.formData.country}
+                    onChange={this.inputChange('country')}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="accountNumber"
+                    label="Account Number"
+                    fullWidth
+                    value={this.state.formData.accountNumber}
+                    onChange={this.inputChange('accountNumber')}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="amount"
+                    label="Amount"
+                    fullWidth
+                    type="number"
+                    value={this.state.formData.amount}
+                    onChange={this.inputChange('amount')}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="currency"
+                    label="Currency"
+                    fullWidth
+                    value={this.state.formData.currency}
+                    onChange={this.inputChange('currency')}
                 />
             </DialogContent>
             <DialogActions>
@@ -134,23 +212,79 @@ class App extends Component {
 
     generateTranInfoDialog() {
         return (<Dialog
-            open={this.state.open}
-            onClose={this.handleClose}
+            open={this.state.mode === App.MODE.CREATE_TRANSACTION || this.state.mode === App.MODE.UPDATE_TRANSACTION}
+            onClose={this.closeDialog}
             aria-labelledby="form-dialog-title"
         >
-            <DialogTitle id="form-dialog-title"></DialogTitle>
+            <DialogTitle id="form-dialog-title">{this.state.dialogTitle}</DialogTitle>
             <DialogContent>
+                <FormControl style={{width: '100%'}}>
+                    <InputLabel htmlFor="customerId">Customer</InputLabel>
+                    <Select
+                        value={this.state.formData.customerId || ''}
+                        onChange={this.inputChange('customerId')}
+                        inputProps={{
+                            name: 'customerId',
+                            id: 'customerId',
+                        }}
+                    >
+                        {
+                            this.state.customerData.map((customer) => <MenuItem value={customer.id}>{customer.firstName} {customer.lastName}</MenuItem>)
+                        }
+                    </Select>
+                </FormControl>
                 <TextField
                     autoFocus
                     margin="dense"
-                    id="name"
-                    label="Email Address"
-                    type="email"
+                    id="tranAmount"
+                    label="Transaction amount"
                     fullWidth
+                    type="number"
+                    defaultValue="2018-07-06"
+                    value={this.state.formData.tranAmount}
+                    onChange={this.inputChange('tranAmount')}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="tranCurrency"
+                    label="Transaction currency"
+                    fullWidth
+                    value={this.state.formData.tranCurrency}
+                    onChange={this.inputChange('tranCurrency')}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="fromAccount"
+                    label="From account"
+                    fullWidth
+                    value={this.state.formData.fromAccount}
+                    onChange={this.inputChange('fromAccount')}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="toAccount"
+                    label="To account"
+                    fullWidth
+                    value={this.state.formData.toAccount}
+                    onChange={this.inputChange('toAccount')}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="tranDay"
+                    label="Transaction Day"
+                    fullWidth
+                    defaultValue='2018-07-07'
+                    value={this.state.formData.tranDay}
+                    type="date"
+                    onChange={this.inputChange('tranDay')}
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={this.handleClose} color="primary">
+                <Button onClick={this.closeDialog} color="primary">
                     Cancel
                 </Button>
                 <Button onClick={(e) => {
@@ -175,17 +309,13 @@ class App extends Component {
         >
             <DialogTitle id="form-dialog-title">{this.state.dialogTitle}</DialogTitle>
             <DialogContent>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Email Address"
-                    type="email"
-                    fullWidth
-                />
+                <DialogContentText>
+                    {this.state.mode === App.MODE.DELETE_CUSTOMER && `Are you sure to delete customer ${this.state.formData.fisrtName}?`}
+                    {this.state.mode === App.MODE.DELETE_TRANSACTION && `Are you sure to delete transaction ${this.state.formData.id}?`}
+                </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={this.handleClose} color="primary">
+                <Button onClick={this.closeDialog} color="primary">
                     Cancel
                 </Button>
                 <Button onClick={(e) => {
@@ -214,19 +344,19 @@ class App extends Component {
                 {
                     value: 'Create',
                     onClick: (e) => {
-                        console.log('Create----------')
+                        this.openDialog({}, App.MODE.CREATE_CUSTOMER)
                     },
                 },
                 {
                     value: 'Update',
                     onClick: (e) => {
-                        console.log('Update----------')
+                        this.openDialog(customer, App.MODE.UPDATE_CUSTOMER)
                     },
                 },
                 {
                     value: 'Delete',
                     onClick: (e) => {
-                        console.log('Delete----------')
+                        this.openDialog(customer, App.MODE.DELETE_CUSTOMER)
                     },
                 }
             ]}/>)
@@ -253,19 +383,19 @@ class App extends Component {
                 {
                     value: 'Create',
                     onClick: (e) => {
-                        console.log('Create----------')
+                        this.openDialog({}, App.MODE.CREATE_TRANSACTION)
                     },
                 },
                 {
                     value: 'Update',
                     onClick: (e) => {
-                        console.log('Update----------')
+                        this.openDialog(transaction, App.MODE.UPDATE_TRANSACTION)
                     },
                 },
                 {
                     value: 'Delete',
                     onClick: (e) => {
-                        console.log('Delete----------')
+                        this.openDialog(transaction, App.MODE.DELETE_TRANSACTION)
                     },
                 }
             ]}/>)
@@ -277,20 +407,110 @@ class App extends Component {
         return <SimpleTable data={tableData} tableHeaders={tableHeaders}/>
     }
 
-    create() {}
+    create(type) {
+        if (type === 'customer') {
+            fetch(App.CUSTOMER_API_URL, {
+                method: 'POST',
+                body: JSON.stringify(this.state.formData)
+            }).then((respose) => {
+                this.closeDialog();
+                fetch('/demo/customers', {method: 'get'}).then((response) => {
+                    this.setState({
+                        customerData: response,
+                    })
+                });
+            }).catch((e) => {
+                console.log(e)
+            });
+        } else {
+            fetch(App.TRANSACTION_API_URL, {
+                method: 'POST',
+                body: JSON.stringify(this.state.formData)
+            }).then((respose) => {
+                this.closeDialog();
+                fetch('/demo/transactions', {method: 'get'}).then((response) => {
+                    this.setState({
+                        transactionData: response,
+                    })
+                });
+            }).catch((e) => {
+                console.log(e)
+            });
+        }
+    }
 
-    update() {}
+    update(type) {
+        if (type === 'customer') {
+            fetch(App.CUSTOMER_API_URL + `/${this.state.formData.id}`, {
+                method: 'PUT',
+                body: JSON.stringify(this.state.formData)
+            }).then((respose) => {
+                this.closeDialog();
+                fetch('/demo/customers', {method: 'get'}).then((response) => {
+                    this.setState({
+                        customerData: response,
+                    })
+                });
+            }).catch((e) => {
+                console.log(e)
+            });
+        } else {
+            fetch(App.TRANSACTION_API_URL + `/${this.state.formData.id}`, {
+                method: 'PUT',
+                body: JSON.stringify(this.state.formData)
+            }).then((respose) => {
+                this.closeDialog();
+                fetch('/demo/transactions', {method: 'get'}).then((response) => {
+                    this.setState({
+                        transactionData: response,
+                    })
+                });
+            }).catch((e) => {
+                console.log(e)
+            });
+        }
+    }
 
-    delete() {}
+    delete(type) {
+        if (type === 'customer') {
+            fetch(App.CUSTOMER_API_URL + `/${this.state.formData.id}`, {
+                method: 'DELETE'
+            }).then((respose) => {
+                this.closeDialog();
+                fetch('/demo/customers', {method: 'get'}).then((response) => {
+                    this.setState({
+                        customerData: response,
+                    })
+                });
+            }).catch((e) => {
+                console.log(e)
+            });
+        } else {
+            fetch(App.TRANSACTION_API_URL + `/${this.state.formData.id}`, {
+                method: 'DELETE',
+                body: JSON.stringify(this.state.formData)
+            }).then((respose) => {
+                this.closeDialog();
+                fetch('/demo/transactions', {method: 'get'}).then((response) => {
+                    this.setState({
+                        transactionData: response,
+                    })
+                });
+            }).catch((e) => {
+                console.log(e)
+            });
+        }
+    }
+
     render() {
         return (
             <div className="App">
                 <AppBar>
-                <Tabs value={this.state.tabIndex} onChange={this.changeTab}>
-                    <Tab label="Customers" />
-                    <Tab label="Transactions" />
-                </Tabs>
-            </AppBar>
+                    <Tabs value={this.state.tabIndex} onChange={this.changeTab}>
+                        <Tab label="Customers"/>
+                        <Tab label="Transactions"/>
+                    </Tabs>
+                </AppBar>
                 {
                     this.state.tabIndex === 0 &&
                     <div style={{padding: 24}}>

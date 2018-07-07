@@ -1,10 +1,11 @@
 import fetch from 'isomorphic-fetch';
 
 
+const headers = new Headers();
+headers.append('content-type', 'application/json');
+
 const init = {
-    headers: {
-        'Accept': 'application/json',
-    }
+    headers: headers
 };
 const API_HOST = '/api';
 export default function fetchData(url, config){
