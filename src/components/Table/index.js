@@ -30,7 +30,7 @@ class SimpleTable extends React.Component {
                             {
                                 tableHeaders.map((header) => {
                                     return (
-                                        <TableCell style={{fontWeight: 'bold'}}>{header}</TableCell>
+                                        <TableCell style={{fontWeight: 'bold', fontSize: 18}}>{header}</TableCell>
                                     );
                                 })
                             }
